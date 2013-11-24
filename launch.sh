@@ -12,24 +12,22 @@ serverSession() {
 
 	#cycles = total hours between restarts
 
-	######cycles=4
-
 	hour=3600
 	period=$((cycles*hour))
 
 	sleep 80
 
-	screen -S mineBumbs -X stuff $firstText
+	screen -S mineBumbs -X stuff "$firstText"
 	screen -S mineBumbs -X eval "stuff \015"
 
 	sleep 10
 
-	screen -S mineBumbs -X stuff $secondText
+	screen -S mineBumbs -X stuff "$secondText"
 	screen -S mineBumbs -X eval "stuff \015"
 
 	sleep 10
 
-	screen -S mineBumbs -X stuff $thirdText
+	screen -S mineBumbs -X stuff "$thirdText"
 	screen -S mineBumbs -X eval "stuff \015"
 	
 
@@ -95,7 +93,7 @@ while true; do
 
 	serverSession &
 	
-	screen -S mineBumbs java -Xmx1024m -Xms1024m -jar minecraft_server.jar nogui	
+	screen -S mineBumbs java -Xmx1024m -Xms1024m -jar Tekkit.jar nogui	
 
 	screen -ls | grep "mineBumbs" | awk '{print $1}' | xargs -r -i -n1 screen -X -S {} quit
 	
