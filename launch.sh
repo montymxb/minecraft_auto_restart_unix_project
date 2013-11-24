@@ -11,23 +11,25 @@ serverSession() {
 	#restart every 4 hours?? 14400 sleep time total required
 
 	#cycles = total hours between restarts
-	cycles=4
+
+	######cycles=4
+
 	hour=3600
 	period=$((cycles*hour))
 
 	sleep 80
 
-	screen -S mineBumbs -X stuff "say Welcome to Le Spice World"
+	screen -S mineBumbs -X stuff $firstText
 	screen -S mineBumbs -X eval "stuff \015"
 
 	sleep 10
 
-	screen -S mineBumbs -X stuff "say Current Texture Pack is Jolicraft!"
+	screen -S mineBumbs -X stuff $secondText
 	screen -S mineBumbs -X eval "stuff \015"
 
 	sleep 10
 
-	screen -S mineBumbs -X stuff "say compliments from Superkelp and mxb..."
+	screen -S mineBumbs -X stuff $thirdText
 	screen -S mineBumbs -X eval "stuff \015"
 	
 
@@ -80,6 +82,14 @@ serverSession() {
 	screen -S mineBumbs -X eval "stuff \015"
 	####
 }
+
+configFile=properties.cfg
+
+if [[ -f $configFile ]]; then
+
+	. $configFile
+	
+fi
 
 while true; do
 
