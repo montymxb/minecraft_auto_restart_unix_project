@@ -1,4 +1,4 @@
-screen -x mineBumbs
+############screen -x mineBumbs
 
 #restart every 4 hours?? 14400 sleep time total required
 
@@ -59,6 +59,8 @@ screen -S mineBumbs -X eval "stuff \015"
 
 sleep 30
 
-screen -wipe
+######screen -wipe
 
-./launch.sh
+#Kill the screen
+screen -S mineBumbs -X stuff "exit"
+screen -S mineBumbs -X eval "stuff \015"
