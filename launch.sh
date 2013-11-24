@@ -93,7 +93,7 @@ while true; do
 
 	serverSession &
 	
-	screen -S mineBumbs java -Xmx1024m -Xms1024m -jar Tekkit.jar nogui	
+	screen -S mineBumbs java -Xmx1024m -Xms1024m -jar "$minecraftJarName" nogui	
 
 	screen -ls | grep "mineBumbs" | awk '{print $1}' | xargs -r -i -n1 screen -X -S {} quit
 	
