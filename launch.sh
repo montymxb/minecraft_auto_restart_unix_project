@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 cd "$(dirname "$0")"
 
 #Main launch program, executes java server under the given name
@@ -76,24 +76,27 @@ serverSession() {
 
 	##### screen kill OSX Style
 	#Kill the screen
-	screen -S mineBumbs -X stuff "exit"
+	screen 	-S mineBumbs -X stuff "exit"
 	screen -S mineBumbs -X eval "stuff \015"
 	####
 }
 
-configFile=properties.cfg
+#####configFile="properties.cfg"
 
-if [[ -f $configFile ]]; then
-
-	. $configFile
+###if [-f $configFile]; then
+##
 	
-fi
+	source properties.cfg
+##	
+###fi
 
 while true; do
 
 	serverSession &
 	
-	screen -S mineBumbs java -Xmx1024m -Xms1024m -jar "$minecraftJarName" nogui	
+	screen -S mineBumbs java -Xmx1024m -Xms1024m -jar $minecraftJarName nogui	
+
+	echo "BAKED BEANS YOU KNOW"
 
 	screen -ls | grep "mineBumbs" | awk '{print $1}' | xargs -r -i -n1 screen -X -S {} quit
 	
