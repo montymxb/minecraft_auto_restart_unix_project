@@ -9,7 +9,7 @@ cd "$(dirname "$0")"
 
 initialize() {
 	##Checks for an installation of screen
-	screenInstall=$(dpkg -l | awk '{print $2}' | grep "^sccreen$")
+	screenInstall=$(dpkg -l | awk '{print $2}' | grep "^screen$")
 	if [ ! $screenInstall ]; then
 		echo ""
 		echo "ERROR: Screen is not installed."
