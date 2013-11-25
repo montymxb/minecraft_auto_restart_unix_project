@@ -1,10 +1,24 @@
 #!/bin/bash
 cd "$(dirname "$0")"
+dos2unix properties.cfg
+. properties.cfg
 
 #Main launch program, executes java server under the given name
 #sets up the server inside a created daemon Screen
 #starts background Master Process to oversee server management
 #sets Minecraft screen as current screen
+
+backUp() {
+	numBackups=$(ls -1 backups | grep ".*\.tar.gz" | wc -l)
+
+	while [ $numBackups -ge $maxBackups ]; do
+		rm "backups/$(ls -tr1 backups/ | grep ".*\.tar.gz" | sed -n 1p)"
+		numBackups=$(ls -1 backups | grep ".*\.tar.gz" | wc -l)
+	done
+
+	timeStamp=$(date +"%d-%b-%y %H:%M")
+	tar -zcvf "backups/$timeStamp.tar.gz" world
+}
 
 serverSession() {
 
@@ -86,17 +100,19 @@ serverSession() {
 ###if [-f $configFile]; then
 ##
 	
-	source properties.cfg
+###	source properties.cfg
 ##	
 ###fi
 
 while true; do
 
+	backUp
+
+	sleep 10
+
 	serverSession &
 	
 	screen -S mineBumbs java -Xmx1024m -Xms1024m -jar $minecraftJarName nogui	
-
-	echo "BAKED BEANS YOU KNOW"
 
 	screen -ls | grep "mineBumbs" | awk '{print $1}' | xargs -r -i -n1 screen -X -S {} quit
 	
