@@ -1,6 +1,5 @@
 #!/bin/bash
 cd "$(dirname "$0")"
-dos2unix properties.cfg
 . properties.cfg
 
 #Main launch program, executes java server under the given name
@@ -8,41 +7,59 @@ dos2unix properties.cfg
 #starts background Master Process to oversee server management
 #sets Minecraft screen as current screen
 
+initialize() {
+	##Checks for an installation of screen
+	screenInstall=$(dpkg -l | awk '{print $2}' | grep "^sccreen$")
+	if [ ! $screenInstall ]; then
+		echo ""
+		echo "ERROR: Screen is not installed."
+		echo "Run this in your terminal: sudo apt-get install screen"
+		echo ""
+	fi
+
+	##Checks for backups directory, and creates it if it doesn't exist
+	if [ ! -d "backups" ]; then
+  		mkdir "backups"
+	fi
+}
+
 backUp() {
+	##Counts current number of backups
 	numBackups=$(ls -1 backups | grep ".*\.tar.gz" | wc -l)
 
+	##Deletes the oldest backup until there is room for the new one
 	while [ $numBackups -ge $maxBackups ]; do
 		rm "backups/$(ls -tr1 backups/ | grep ".*\.tar.gz" | sed -n 1p)"
 		numBackups=$(ls -1 backups | grep ".*\.tar.gz" | wc -l)
 	done
 
+	##Creates a new backup
 	timeStamp=$(date +"%d-%b-%y %H:%M")
 	tar -zcvf "backups/$timeStamp.tar.gz" world
 }
 
 serverSession() {
 
-	#restart every 4 hours?? 14400 sleep time total required
-
 	#cycles = total hours between restarts
 
+	##Defines the total cycle period
 	hour=3600
 	period=$((cycles*hour))
 
 	sleep 80
 
-	screen -S mineBumbs -X stuff "$firstText"
-	screen -S mineBumbs -X eval "stuff \015"
+	screen -S minecraftServer -X stuff "$firstText"
+	screen -S minecraftServer -X eval "stuff \015"
 
 	sleep 10
 
-	screen -S mineBumbs -X stuff "$secondText"
-	screen -S mineBumbs -X eval "stuff \015"
+	screen -S minecraftServer -X stuff "$secondText"
+	screen -S minecraftServer -X eval "stuff \015"
 
 	sleep 10
 
-	screen -S mineBumbs -X stuff "$thirdText"
-	screen -S mineBumbs -X eval "stuff \015"
+	screen -S minecraftServer -X stuff "$thirdText"
+	screen -S minecraftServer -X eval "stuff \015"
 	
 
 	sleep $((period-100-600))
@@ -50,8 +67,8 @@ serverSession() {
 #	####Future feauture: ping each hour
 #	while [ "$cycles" -gt 1 ]; do
 #	currentHour=$((period/3600+1-cycles))
-#	screen -S mineBumbs -X stuff "say Server uptime of $currentHour hour..."
-#	screen -S mineBumbs -X eval "stuff \015"
+#	screen -S minecraftServer -X stuff "say Server uptime of $currentHour hour..."
+#	screen -S minecraftServer -X eval "stuff \015"
 #
 #	cycles=$(($cycles-1))
 #	if [ "$cycles" -gt 2 ]
@@ -63,58 +80,57 @@ serverSession() {
 #
 #	done
 
-	screen -S mineBumbs -X stuff "say Server will be restarting in 10 minutes..."
-	screen -S mineBumbs -X eval "stuff \015"
+	screen -S minecraftServer -X stuff "say Server will be restarting in 10 minutes..."
+	screen -S minecraftServer -X eval "stuff \015"
 
 	sleep 300
 
-	screen -S mineBumbs -X stuff "say Server will be restarting in 5 minutes..."
-	screen -S mineBumbs -X eval "stuff \015"
+	screen -S minecraftServer -X stuff "say Server will be restarting in 5 minutes..."
+	screen -S minecraftServer -X eval "stuff \015"
 
 	sleep 240
 
-	screen -S mineBumbs -X stuff "say Server Will Be Restarting in 1 minute..."
-	screen -S mineBumbs -X eval "stuff \015"
+	screen -S minecraftServer -X stuff "say Server Will Be Restarting in 1 minute..."
+	screen -S minecraftServer -X eval "stuff \015"
 
 	sleep 50
 
-	screen -S mineBumbs -X stuff "say Server Is Restarting Now"
-	screen -S mineBumbs -X eval "stuff \015"
+	screen -S minecraftServer -X stuff "say Server Is Restarting Now"
+	screen -S minecraftServer -X eval "stuff \015"
 
 	sleep 10
 
-	screen -S mineBumbs -X stuff "stop"
-	screen -S mineBumbs -X eval "stuff \015"
+	##Stops the server (ideally)
+	screen -S minecraftServer -X stuff "stop"
+	screen -S minecraftServer -X eval "stuff \015"
 
 	sleep 30
 
 	##### screen kill OSX Style
 	#Kill the screen
-	screen 	-S mineBumbs -X stuff "exit"
-	screen -S mineBumbs -X eval "stuff \015"
+	screen 	-S minecraftServer -X stuff "exit"
+	screen -S minecraftServer -X eval "stuff \015"
 	####
 }
 
-#####configFile="properties.cfg"
-
-###if [-f $configFile]; then
-##
-	
-###	source properties.cfg
-##	
-###fi
-
 while true; do
 
+	##Makes sure all assets are present
+	initialize
+
+	##Backs up the server, deletes old backups
 	backUp
 
 	sleep 10
 
+	##Starts up the server script which . '$' makes it run in the background
 	serverSession &
 	
-	screen -S mineBumbs java -Xmx1024m -Xms1024m -jar $minecraftJarName nogui	
+	##Starts up a server.
+	screen -S minecraftServer java -Xmx1024m -Xms1024m -jar $minecraftJarName nogui	
 
-	screen -ls | grep "mineBumbs" | awk '{print $1}' | xargs -r -i -n1 screen -X -S {} quit
+	##Cleans up any rougue server instances
+	screen -ls | grep "minecraftServer" | awk '{print $1}' | xargs -r -i -n1 screen -X -S {} quit
 	
 	sleep 10
 
