@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 #Main launch program, executes java server under the given name
 #sets up the server inside a created daemon Screen
 #starts background Master Process to oversee server management
-#sets Minecraft screen as current screen
+#sets @restart==trueMinecraft screen as current screen
 
 initialize() {
 	##Checks for an installation of screen
@@ -16,6 +16,9 @@ initialize() {
 		echo "Run this in your terminal: sudo apt-get install screen"
 		echo ""
 	fi
+
+	##Should check for sudo apt-get install openjdk-7-jre-headless
+	##Gems: parseconfig
 
 	##Checks for backups directory, and creates it if it doesn't exist
 	if [ ! -d "backups" ]; then
