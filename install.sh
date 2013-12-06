@@ -27,7 +27,7 @@ if $java; then
 else
 	echo "Install openjdk-7-jre-headless? (y/n)"
 	read choice
-	if [ $choice = "y" ]; then 
+	if [ $choice ] && [ $choice = "y" ]; then 
 		sudo apt-get install openjdk-7-jre-headless
 	fi
 fi
@@ -37,7 +37,7 @@ if $screen; then
 else
 	echo "Install screen? (y/n)"
 	read choice
-	if [ $choice = "y" ]; then 
+	if [ $choice ] && [ $choice = "y" ]; then 
 		sudo apt-get install screen
 	fi
 fi
@@ -47,7 +47,7 @@ if $ruby; then
 else
 	echo "Install ruby? (y/n)"
 	read choice
-	if [ $choice = "y" ]; then 
+	if [ $choice ] && [ $choice = "y" ]; then 
 		sudo apt-get install ruby
 	fi
 fi
@@ -57,17 +57,18 @@ if $parseConfig; then
 else
 	echo "Install parseconfig? (y/n)"
 	read choice
-	if [ $choice = "y" ]; then 
+	if [ $choice ] && [ $choice = "y" ]; then 
 		sudo gem install parseconfig
 	fi
 fi
 
 wget -N 'https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/server.rb'
+chmod a+x server.rb
 
 if [ -e 'properties.cfg' ]; then
 	echo 'properties.cfg already exists. Replace with default? (y/n)'
 	read choice
-	if [ $choice = "y" ]; then 
+	if [ $choice ] && [ $choice = "y" ]; then 
 		wget -N 'https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/properties.cfg'
 	fi
 else
@@ -76,7 +77,7 @@ fi
 
 echo "Download latest minecraft_server.jar? (y/n)"
 read choice
-if [ $choice = "y" ]; then 
+if [ $choice ] && [ $choice = "y" ]; then 
 	wget -Nq https://s3.amazonaws.com/Minecraft.Download/versions/versions.json
 	version=$(grep '"release": ".*"' versions.json | sed 's/"release"\: "//' | sed 's/"//' | sed -e 's/^[ \t]*//')
 	version="1.7.2"
@@ -86,7 +87,7 @@ fi
 
 echo "Install server files (do not run unless you have a clean minecraft_server.jar)? (y/n)"
 read choice
-if [ $choice = "y" ]; then 
+if [ $choice ] && [ $choice = "y" ]; then 
 		echo "Wait 20 seconds, please!"
 		screen -dmS minecraftServer java -Xmx1024m -Xms1024m -jar minecraft_server.jar nogui
 		sleep 20
