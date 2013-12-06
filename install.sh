@@ -16,7 +16,11 @@ screen=$package
 checkInstalled 'ruby'
 ruby=$package
 
-parseConfig=$(gem list parseconfig -i)
+if [ $(gem list parseconfig -i) = "true" ]; then
+	parseConfig=true
+else
+	parseConfig=false
+fi
 
 if $java; then
 	echo "openjdk-7-jre-headless already installed - skipping"
