@@ -16,16 +16,10 @@ screen=$package
 checkInstalled 'ruby'
 ruby=$package
 
-if [ $(gem list parseconfig -i) = "true" ]; then
-	parseConfig=true
-else
-	parseConfig=false
-fi
-
 if $java; then
 	echo "openjdk-7-jre-headless already installed - skipping"
 else
-	echo "Install openjdk-7-jre-headless? (y/n)"
+	echo -n "Install openjdk-7-jre-headless? (y/n)"
 	read choice
 	if [ $choice ] && [ $choice = "y" ]; then 
 		sudo apt-get install openjdk-7-jre-headless
@@ -35,7 +29,7 @@ fi
 if $screen; then
 	echo "screen already installed - skipping"
 else
-	echo "Install screen? (y/n)"
+	echo -n "Install screen? (y/n)"
 	read choice
 	if [ $choice ] && [ $choice = "y" ]; then 
 		sudo apt-get install screen
@@ -45,17 +39,23 @@ fi
 if $ruby; then
 	echo "ruby already installed - skipping"
 else
-	echo "Install ruby? (y/n)"
+	echo -n "Install ruby? (y/n)"
 	read choice
 	if [ $choice ] && [ $choice = "y" ]; then 
 		sudo apt-get install ruby
 	fi
 fi
 
+if [ $(gem list parseconfig -i) = "true" ] && $ruby; then
+	parseConfig=true
+else
+	parseConfig=false
+fi
+
 if $parseConfig; then
 	echo "parseconfig already installed - skipping"
 else
-	echo "Install parseconfig? (y/n)"
+	echo -n "Install parseconfig? (y/n)"
 	read choice
 	if [ $choice ] && [ $choice = "y" ]; then 
 		sudo gem install parseconfig
@@ -66,7 +66,7 @@ wget -N 'https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/rub
 chmod a+x server.rb
 
 if [ -e 'properties.cfg' ]; then
-	echo 'properties.cfg already exists. Replace with default? (y/n)'
+	echo -n 'properties.cfg already exists. Replace with default? (y/n)'
 	read choice
 	if [ $choice ] && [ $choice = "y" ]; then 
 		wget -N 'https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/properties.cfg'
@@ -75,7 +75,7 @@ else
 	wget 'https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/properties.cfg'
 fi	
 
-echo "Download latest minecraft_server.jar? (y/n)"
+echo -n "Download latest minecraft_server.jar? (y/n)"
 read choice
 if [ $choice ] && [ $choice = "y" ]; then 
 	wget -Nq https://s3.amazonaws.com/Minecraft.Download/versions/versions.json
@@ -85,7 +85,7 @@ if [ $choice ] && [ $choice = "y" ]; then
 	rm versions.json
 fi
 
-echo "Install server files (do not run unless you have a clean minecraft_server.jar)? (y/n)"
+echo -n "Install server files (do not run unless you have a clean minecraft_server.jar)? (y/n)"
 read choice
 if [ $choice ] && [ $choice = "y" ]; then 
 		echo "Wait 20 seconds, please!"
