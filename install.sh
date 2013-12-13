@@ -37,12 +37,12 @@ echo -n "Install server files (do not run unless you have a clean minecraft_serv
 read choice
 if [ $choice ] && [ $choice = "y" ]; then 
 		echo -n "Wait 20 seconds, please!"
+		screen -dmS minecraftServer java -Xmx1024m -Xms1024m -jar minecraft_server.jar nogui
 		for i in {1..20}
 		do
-			echo $i
+			echo -ne '.'
+			sleep 1
 		done 
-		screen -dmS minecraftServer java -Xmx1024m -Xms1024m -jar minecraft_server.jar nogui
-		sleep 20
 		screen -S minecraftServer -X stuff "stop"
 		screen -S minecraftServer -X eval "stuff \015"
 		screen -ls | grep "minecraftServer" | awk '{print $1}' | xargs -r -i -n1 screen -X -S {} quit
