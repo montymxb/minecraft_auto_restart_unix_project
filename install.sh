@@ -7,6 +7,13 @@ else
 fi
 }
 
+echo "Packages to be installed: ruby, openjdk-7-jre-headless, screen"
+echo -n "Install required packages? (y/n): "
+read choice
+	if [ $choice ] && [ $choice = "n" ]; then 
+		exit
+	fi
+
 checkInstalled 'openjdk-7-jre-headless'
 java=$package
 
