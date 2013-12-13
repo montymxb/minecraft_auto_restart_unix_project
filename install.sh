@@ -1,11 +1,4 @@
 #!/bin/bash
-checkInstalled() {
-if dpkg-query -l $1 2>/dev/null | grep -q ^.i; then
-	package=true
-else
-	package=false
-fi
-}
 
 echo "Packages to be installed: ruby, openjdk-7-jre-headless, screen"
 echo -n "Install required packages? (y/n): "
@@ -14,60 +7,8 @@ read choice
 		exit
 	fi
 
-checkInstalled 'openjdk-7-jre-headless'
-java=$package
-
-checkInstalled 'screen'
-screen=$package
-
-checkInstalled 'ruby'
-ruby=$package
-
-if $java; then
-	echo "openjdk-7-jre-headless already installed - skipping"
-else
-	echo -n "Install openjdk-7-jre-headless? (y/n): "
-	read choice
-	if [ $choice ] && [ $choice = "y" ]; then 
-		sudo apt-get install openjdk-7-jre-headless
-	fi
-fi
-
-if $screen; then
-	echo "screen already installed - skipping"
-else
-	echo -n "Install screen? (y/n): "
-	read choice
-	if [ $choice ] && [ $choice = "y" ]; then 
-		sudo apt-get install screen
-	fi
-fi
-
-if $ruby; then
-	echo "ruby already installed - skipping"
-else
-	echo -n "Install ruby? (y/n): "
-	read choice
-	if [ $choice ] && [ $choice = "y" ]; then 
-		sudo apt-get install ruby
-	fi
-fi
-
-if [ $(gem list parseconfig -i) = "true" ] && $ruby; then
-	parseConfig=true
-else
-	parseConfig=false
-fi
-
-if $parseConfig; then
-	echo "parseconfig already installed - skipping"
-else
-	echo -n "Install parseconfig? (y/n): "
-	read choice
-	if [ $choice ] && [ $choice = "y" ]; then 
+		sudo apt-get install ruby openjdk-7-jre-headless screen
 		sudo gem install parseconfig
-	fi
-fi
 
 wget -N 'https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/server.rb'
 chmod a+x server.rb
