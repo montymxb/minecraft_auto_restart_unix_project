@@ -36,13 +36,11 @@ fi
 echo -n "Install server files (do not run unless you have a clean minecraft_server.jar)? (y/n): "
 read choice
 if [ $choice ] && [ $choice = "y" ]; then 
-		echo "Wait 20 seconds, please!"
-		echo -ne '#####                     (33%)\r'
-		sleep 1
-		echo -ne '#############             (66%)\r'
-		sleep 1
-		echo -ne '#######################   (100%)\r'
-		echo -ne '\n'
+		echo -n "Wait 20 seconds, please!"
+		for i in {1..20}
+		do
+			echo $i
+		done 
 		screen -dmS minecraftServer java -Xmx1024m -Xms1024m -jar minecraft_server.jar nogui
 		sleep 20
 		screen -S minecraftServer -X stuff "stop"
