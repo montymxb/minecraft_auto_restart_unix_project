@@ -40,7 +40,7 @@ if [ $choice ] && [ $choice = "y" ]; then
 		for i in {1..20}
 		do
 			c=$((20-i))
-			echo -ne "Wait $c seconds, please!\r"
+			echo -ne "Wait $c seconds, please! \r"
 			sleep 1
 		done 
 		echo -ne '\n'
@@ -48,4 +48,5 @@ if [ $choice ] && [ $choice = "y" ]; then
 		screen -S minecraftServer -X eval "stuff \015"
 		screen -ls | grep "minecraftServer" | awk '{print $1}' | xargs -r -i -n1 screen -X -S {} quit
 fi
+echo
 echo "Done! Run ./server.rb to run your server! Don't forget to set up your server.properties and properties.cfg files :)."
