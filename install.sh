@@ -40,9 +40,11 @@ if [ $choice ] && [ $choice = "y" ]; then
 		screen -dmS minecraftServer java -Xmx1024m -Xms1024m -jar minecraft_server.jar nogui
 		for i in {1..20}
 		do
-			echo -ne '.'
+			c=$((20-i))
+			echo -ne "Wait $c seconds, please!\r"
 			sleep 1
 		done 
+		echo -ne '\n'
 		screen -S minecraftServer -X stuff "stop"
 		screen -S minecraftServer -X eval "stuff \015"
 		screen -ls | grep "minecraftServer" | awk '{print $1}' | xargs -r -i -n1 screen -X -S {} quit
