@@ -8,7 +8,6 @@ read choice
 	fi
 
 		sudo apt-get install ruby openjdk-7-jre-headless screen
-		sudo gem install parseconfig
 
 wget -N 'https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/server.rb'
 chmod a+x server.rb

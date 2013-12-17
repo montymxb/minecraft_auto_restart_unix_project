@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
-require 'parseconfig.rb'
-CONFIG = ParseConfig.new('properties.cfg')
-CONFIG.get_params()
+load 'properties.cfg'
 @restart=true
 $stderr.reopen("error.log", "w")
 #$stdout.reopen("devlog.log", "w")
@@ -19,15 +17,15 @@ def backUp(d)
 	end
 	Dir.mkdir(d) unless Dir.exist?(d)
 	Dir.chdir(d)
-	while (Dir['*.tar.gz'].count >= CONFIG['maxBackups'].to_i) do
+	while (Dir['*.tar.gz'].count >= MAXBACKUPS) do
 		oldest = Dir['*.tar.gz'].sort_by{ |f| File.mtime(f) }[0]
 		File.delete(oldest)
-		puts "Deleted #{CONFIG['backupDirectory']}/#{oldest}"
+		puts "Deleted #{BACKUPDIRECTORY}/#{oldest}"
 	end
 	Dir.chdir('..')
 	time = Time.now.strftime('%d-%b-%y %H:%M:%S')
-	`tar -zcvf "#{CONFIG['backupDirectory']}/#{time}.tar.gz" #{@world}`
-	puts "Backed #{@world}/ up to #{CONFIG['backupDirectory']}/#{time}.tar.gz"
+	`tar -zcvf "#{BACKUPDIRECTORY}/#{time}.tar.gz" #{@world}`
+	puts "Backed #{@world}/ up to #{BACKUPDIRECTORY}/#{time}.tar.gz"
 end
 
 def sendCommand(command)
@@ -38,15 +36,9 @@ end
 
 def serverSession()
 	tick = 0
-	maxTick = 60 * CONFIG['cycles'].to_i
+	maxTick = 60 * CYCLES
 	while (tick <= maxTick) do
 		case tick
-		when 1
-			sendCommand("say #{CONFIG['text1']}")
-		when 2
-			sendCommand("say #{CONFIG['text2']}")
-		when 3
-			sendCommand("say #{CONFIG['text3']}")
 		when maxTick-10
 			sendCommand('say Server will be restarting in 10 minutes.')
 		when maxTick-5
@@ -62,6 +54,9 @@ def serverSession()
 		if ((tick%60 == 0) && (tick != 0) && (tick != maxTick))
 			sendCommand("say Server has been up for #{tick/60} hours")
 		end
+		if (MESSAGES.has_key?(tick))
+			sendCommand("say #{MESSAGES[tick]}")
+		end
 		tick=tick+1
 		sleep 60 unless tick > maxTick
 	end
@@ -71,15 +66,15 @@ while @restart==true do
 
 	@restart=false
 
-	backUp(CONFIG['backupDirectory'])
+	backUp(BACKUPDIRECTORY)
 
-	puts "Starting server in #{CONFIG['postBackup']} seconds..."
-	sleep CONFIG['postBackup'].to_i
+	puts "Starting server in #{POSTBACKUP} seconds..."
+	sleep POSTBACKUP
 
 	session = Thread.new {serverSession()}
 	sleep 3
 
-	server = Process.spawn("screen -S minecraftServer java -Xmx1024m -Xms1024m -jar #{CONFIG['minecraftJarName']} nogui")
+	server = Process.spawn("screen -S minecraftServer java -Xmx1024m -Xms1024m -jar #{MINECRAFTJARNAME} nogui")
 	Process.wait(server)
 
 	session.kill
