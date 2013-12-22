@@ -1,56 +1,6 @@
 #!/bin/bash
 
 
-###########Checks to see what OS we're running (added 12/21/2013)
-result=`uname -s`
-
-if [ $result = "Darwin" ]; then
-	##OSX does NOT come with wget, however it is available so lets check for it first
-	echo "
-	
-	running on Mac OSX"
-	echo "checking for wget on OSX...
-	
-	"
-	
-	if ! type wget > /dev/null; then
-		##wget not here, ask install
-		echo "You do not have wget, install it now? Without wget the dependencies will not be installed for you. (This may take a few minutes) (y/n):"
-		read choice
-		if [ $choice ] && [ $choice = "y" ]; then 
-		
-			echo "installing wget..."
-			
-			curl -O http://ftp.gnu.org/gnu/wget/wget-1.14.tar.gz
-			
-			tar -zxvf wget-1.14.tar.gz
-			
-			cd wget-1.14/
-			
-			./configure --with-ssl=openssl
-			
-			make
-			
-			sudo make install
-			
-			##Cleans up all wget files that we pulled down while installing
-			rm -rf wget*
-			rm -rf wget-1.14.tar.gz
-			rm -rf wget-1.14
-			
-		fi
-	else
-		echo "wget is already here."
-	fi
-fi
-	
-if [ $result = "Linux" ]; then
-	##Do nothing, wget is standard on Linux
-	echo "running on Linux."
-fi
-##########end of OS check
-
-
 echo "Packages to be installed: ruby, openjdk-7-jre-headless, screen"
 echo -n "Install required packages? (y/n): "
 read choice
@@ -60,26 +10,37 @@ read choice
 
 		sudo apt-get install ruby openjdk-7-jre-headless screen
 
-wget -N 'https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/server.rb'
+#wget -N 'https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/server.rb'
+curl -O https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/server.rb
 chmod a+x server.rb
 
 if [ -e 'properties.cfg' ]; then
 	echo -n 'properties.cfg already exists. Replace with default? (y/n): '
 	read choice
 	if [ $choice ] && [ $choice = "y" ]; then 
-		wget -N 'https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/properties.cfg'
+	
+		#wget -N 'https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/properties.cfg'
+		curl -O https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/properties.cfg
 	fi
 else
-	wget 'https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/properties.cfg'
+
+	#wget 'https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/properties.cfg'
+	curl -O https://raw.github.com/montymxb/minecraft_auto_restart_unix_project/ruby_ubuntu/properties.cfg
 fi	
 
 echo -n "Download latest minecraft_server.jar? (y/n): "
 read choice
 if [ $choice ] && [ $choice = "y" ]; then 
-	wget -Nq https://s3.amazonaws.com/Minecraft.Download/versions/versions.json
+
+	##wget -Nq https://s3.amazonaws.com/Minecraft.Download/versions/versions.json
+	curl -O https://s3.amazonaws.com/Minecraft.Download/versions/versions.json
+	
 	version=$(grep '"release": ".*"' versions.json | sed 's/"release"\: "//' | sed 's/"//' | sed -e 's/^[ \t]*//')
 	version="1.7.2"
-	wget -O minecraft_server.jar "https://s3.amazonaws.com/Minecraft.Download/versions/${version}/minecraft_server.${version}.jar"
+	
+	#wget -O minecraft_server.jar "https://s3.amazonaws.com/Minecraft.Download/versions/${version}/minecraft_server.${version}.jar"
+	curl -o minecraft_server.jar https://s3.amazonaws.com/Minecraft.Download/versions/${version}/minecraft_server.${version}.jar
+	
 	rm versions.json
 fi
 
