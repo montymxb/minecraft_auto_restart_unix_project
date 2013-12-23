@@ -47,21 +47,45 @@ fi
 echo -n "Install server files (do not run unless you have a clean minecraft_server.jar)? (y/n): "
 read choice
 if [ $choice ] && [ $choice = "y" ]; then 
+
 		##boot up server using daemon screen (NOTE: there are issues with a dangling server after this)
-		screen -dmS minecraftServer java -Xmx1024m -Xms1024m -jar minecraft_server.jar nogui
-		##Upping wait time to 30 seconds, 20 seconds too fast for mac
-		for i in {1..30}
-		do
-			c=$((30-i))
-			echo -ne "Wait $c seconds, please! \r"
-			sleep 1
-		done 
-		echo -ne '\n'
-		screen -S minecraftServer -X stuff "stop"
-		screen -S minecraftServer -X eval "stuff \015"
-		screen -ls | grep "minecraftServer" | awk '{print $1}' | xargs -r -i -n1 screen -X -S {} quit
+		
+		{
+			##Upping wait time to 30 seconds, 20 seconds too fast for mac
+			for i in {1..30}
+			do
+				c=$((30-i))
+				##echo -ne "Wait $c seconds, please! \r"
+				screen -S minecraftServer -X stuff "Wait $c seconds, please!"
+				screen -S minecraftServer -X eval "stuff \015"
+				
+				if [ $c = 28 ]; then
+					screen -S minecraftServer -X stuff "You may see 'unknown command' multiple times, this is normal..."
+					screen -S minecraftServer -X eval "stuff \015"
+				fi
+				
+				sleep 1
+			done 
+			echo -ne '\n'
+		
+			screen -S minecraftServer -X stuff "stop"
+			screen -S minecraftServer -X eval "stuff \015"
+			screen -ls | grep "minecraftServer" | awk '{print $1}' | xargs -r -i -n1 screen -X -S {} quit
+		}&
+		
+		screen -S minecraftServer java -Xmx1024m -Xms1024m -jar minecraft_server.jar nogui
 fi
-echo
+echo "
+
+
+
+
+
+"
 echo "Done! Run ./server.rb to run your server! Don't forget to set up your server.properties and properties.cfg files :).
 
 	NOTE: If you attempt to start your minecraft server and it tells you there might be a server running on another port you have a dangling minecraft server from this test. If you are comfortable stop the proper java process using the Activity Monitor (Mac) or equivalent. Otherwise you should restart your computer in order to clear the problem."
+	
+echo "
+
+"
