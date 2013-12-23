@@ -15,7 +15,7 @@ def backUp(d)
 		puts "Error: level-name not found (check your server.properties or error.log)" 
 		return;
 	end
-	Dir.mkdir(d) unless Dir.exist?(d)
+	Dir.mkdir(d) unless File.directory?(d) ##Dir.exist?(d) not available on 1.8.7 (most Macs)
 	Dir.chdir(d)
 	while (Dir['*.tar.gz'].count >= MAXBACKUPS) do
 		oldest = Dir['*.tar.gz'].sort_by{ |f| File.mtime(f) }[0]
@@ -74,7 +74,15 @@ while @restart==true do
 	session = Thread.new {serverSession()}
 	sleep 3
 
-	server = Process.spawn("screen -S minecraftServer java -Xmx1024m -Xms1024m -jar #{MINECRAFTJARNAME} nogui")
+	###server = Process.spawn("screen -S minecraftServer java -Xmx1024m -Xms1024m -jar #{MINECRAFTJARNAME} nogui")
+	##not Process.spawn not available on 1.8.7
+	
+	server = fork do
+		`screen -S minecraftServer java -Xmx1024m -Xms1024m -jar #{MINECRAFTJARNAME} nogui`
+	end
+	
+	Process.detach(server)
+	
 	Process.wait(server)
 
 	session.kill
